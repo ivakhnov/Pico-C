@@ -1,0 +1,5 @@
+
+*.DS_Store
+
+# tilde is used by many text editors such as Emacs to mark temporary files
+*~

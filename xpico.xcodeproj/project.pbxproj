@@ -1,0 +1,262 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		D0D154B91472B39A00C266AB /* PicoEnv.c in Sources */ = {isa = PBXBuildFile; fileRef = D0D154A81472B39A00C266AB /* PicoEnv.c */; };
+		D0D154BA1472B39A00C266AB /* PicoEva.c in Sources */ = {isa = PBXBuildFile; fileRef = D0D154AA1472B39A00C266AB /* PicoEva.c */; };
+		D0D154BB1472B39A00C266AB /* PicoMai.c in Sources */ = {isa = PBXBuildFile; fileRef = D0D154AC1472B39A00C266AB /* PicoMai.c */; };
+		D0D154BC1472B39A00C266AB /* PicoMem.c in Sources */ = {isa = PBXBuildFile; fileRef = D0D154AE1472B39A00C266AB /* PicoMem.c */; };
+		D0D154BD1472B39A00C266AB /* PicoNat.c in Sources */ = {isa = PBXBuildFile; fileRef = D0D154B01472B39A00C266AB /* PicoNat.c */; };
+		D0D154BE1472B39A00C266AB /* PicoPri.c in Sources */ = {isa = PBXBuildFile; fileRef = D0D154B21472B39A00C266AB /* PicoPri.c */; };
+		D0D154BF1472B39A00C266AB /* PicoRea.c in Sources */ = {isa = PBXBuildFile; fileRef = D0D154B41472B39A00C266AB /* PicoRea.c */; };
+		D0D154C01472B39A00C266AB /* PicoSca.c in Sources */ = {isa = PBXBuildFile; fileRef = D0D154B61472B39A00C266AB /* PicoSca.c */; };
+		D0D154C11472B39A00C266AB /* XPico.c in Sources */ = {isa = PBXBuildFile; fileRef = D0D154B81472B39A00C266AB /* XPico.c */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		D0700CEF1472A0F500ACAB11 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = /usr/share/man/man1/;
+			dstSubfolderSpec = 0;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		D0700CF11472A0F500ACAB11 /* xpico */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; name = xpico; path = /Users/joeri/Desktop/xpico/build/Release/xpico; sourceTree = "<absolute>"; };
+		D0D154A71472B39A00C266AB /* Pico.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Pico.h; path = xpico/Pico.h; sourceTree = "<group>"; };
+		D0D154A81472B39A00C266AB /* PicoEnv.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = PicoEnv.c; path = xpico/PicoEnv.c; sourceTree = "<group>"; };
+		D0D154A91472B39A00C266AB /* PicoEnv.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PicoEnv.h; path = xpico/PicoEnv.h; sourceTree = "<group>"; };
+		D0D154AA1472B39A00C266AB /* PicoEva.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = PicoEva.c; path = xpico/PicoEva.c; sourceTree = "<group>"; };
+		D0D154AB1472B39A00C266AB /* PicoEva.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PicoEva.h; path = xpico/PicoEva.h; sourceTree = "<group>"; };
+		D0D154AC1472B39A00C266AB /* PicoMai.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = PicoMai.c; path = xpico/PicoMai.c; sourceTree = "<group>"; };
+		D0D154AD1472B39A00C266AB /* PicoMai.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PicoMai.h; path = xpico/PicoMai.h; sourceTree = "<group>"; };
+		D0D154AE1472B39A00C266AB /* PicoMem.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = PicoMem.c; path = xpico/PicoMem.c; sourceTree = "<group>"; };
+		D0D154AF1472B39A00C266AB /* PicoMem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PicoMem.h; path = xpico/PicoMem.h; sourceTree = "<group>"; };
+		D0D154B01472B39A00C266AB /* PicoNat.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = PicoNat.c; path = xpico/PicoNat.c; sourceTree = "<group>"; };
+		D0D154B11472B39A00C266AB /* PicoNat.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PicoNat.h; path = xpico/PicoNat.h; sourceTree = "<group>"; };
+		D0D154B21472B39A00C266AB /* PicoPri.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = PicoPri.c; path = xpico/PicoPri.c; sourceTree = "<group>"; };
+		D0D154B31472B39A00C266AB /* PicoPri.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PicoPri.h; path = xpico/PicoPri.h; sourceTree = "<group>"; };
+		D0D154B41472B39A00C266AB /* PicoRea.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = PicoRea.c; path = xpico/PicoRea.c; sourceTree = "<group>"; };
+		D0D154B51472B39A00C266AB /* PicoRea.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PicoRea.h; path = xpico/PicoRea.h; sourceTree = "<group>"; };
+		D0D154B61472B39A00C266AB /* PicoSca.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = PicoSca.c; path = xpico/PicoSca.c; sourceTree = "<group>"; };
+		D0D154B71472B39A00C266AB /* PicoSca.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PicoSca.h; path = xpico/PicoSca.h; sourceTree = "<group>"; };
+		D0D154B81472B39A00C266AB /* XPico.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = XPico.c; path = xpico/XPico.c; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		D0700CEE1472A0F500ACAB11 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		D0700CE61472A0F500ACAB11 = {
+			isa = PBXGroup;
+			children = (
+				D0D154A61472B37E00C266AB /* xpico */,
+			);
+			sourceTree = "<group>";
+		};
+		D0D154A61472B37E00C266AB /* xpico */ = {
+			isa = PBXGroup;
+			children = (
+				D0D154A71472B39A00C266AB /* Pico.h */,
+				D0D154A81472B39A00C266AB /* PicoEnv.c */,
+				D0D154A91472B39A00C266AB /* PicoEnv.h */,
+				D0D154AA1472B39A00C266AB /* PicoEva.c */,
+				D0D154AB1472B39A00C266AB /* PicoEva.h */,
+				D0D154AC1472B39A00C266AB /* PicoMai.c */,
+				D0D154AD1472B39A00C266AB /* PicoMai.h */,
+				D0D154AE1472B39A00C266AB /* PicoMem.c */,
+				D0D154AF1472B39A00C266AB /* PicoMem.h */,
+				D0D154B01472B39A00C266AB /* PicoNat.c */,
+				D0D154B11472B39A00C266AB /* PicoNat.h */,
+				D0D154B21472B39A00C266AB /* PicoPri.c */,
+				D0D154B31472B39A00C266AB /* PicoPri.h */,
+				D0D154B41472B39A00C266AB /* PicoRea.c */,
+				D0D154B51472B39A00C266AB /* PicoRea.h */,
+				D0D154B61472B39A00C266AB /* PicoSca.c */,
+				D0D154B71472B39A00C266AB /* PicoSca.h */,
+				D0D154B81472B39A00C266AB /* XPico.c */,
+			);
+			name = xpico;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		D0700CF01472A0F500ACAB11 /* xpico */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = D0700CFB1472A0F500ACAB11 /* Build configuration list for PBXNativeTarget "xpico" */;
+			buildPhases = (
+				D0700CED1472A0F500ACAB11 /* Sources */,
+				D0700CEE1472A0F500ACAB11 /* Frameworks */,
+				D0700CEF1472A0F500ACAB11 /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = xpico;
+			productName = xpico;
+			productReference = D0700CF11472A0F500ACAB11 /* xpico */;
+			productType = "com.apple.product-type.tool";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		D0700CE81472A0F500ACAB11 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				ORGANIZATIONNAME = "Vrije Universiteit Brussel";
+			};
+			buildConfigurationList = D0700CEB1472A0F500ACAB11 /* Build configuration list for PBXProject "xpico" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = D0700CE61472A0F500ACAB11;
+			productRefGroup = D0700CE61472A0F500ACAB11;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				D0700CF01472A0F500ACAB11 /* xpico */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		D0700CED1472A0F500ACAB11 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D0D154B91472B39A00C266AB /* PicoEnv.c in Sources */,
+				D0D154BA1472B39A00C266AB /* PicoEva.c in Sources */,
+				D0D154BB1472B39A00C266AB /* PicoMai.c in Sources */,
+				D0D154BC1472B39A00C266AB /* PicoMem.c in Sources */,
+				D0D154BD1472B39A00C266AB /* PicoNat.c in Sources */,
+				D0D154BE1472B39A00C266AB /* PicoPri.c in Sources */,
+				D0D154BF1472B39A00C266AB /* PicoRea.c in Sources */,
+				D0D154C01472B39A00C266AB /* PicoSca.c in Sources */,
+				D0D154C11472B39A00C266AB /* XPico.c in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		D0700CF91472A0F500ACAB11 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				COPY_PHASE_STRIP = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		D0700CFA1472A0F500ACAB11 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		D0700CFC1472A0F500ACAB11 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				GCC_WARN_CHECK_SWITCH_STATEMENTS = NO;
+				GCC_WARN_INHIBIT_ALL_WARNINGS = NO;
+				"OTHER_LDFLAGS[arch=*]" = (
+					"-ltermcap",
+					"-lncurses",
+					"-lreadline",
+				);
+				PRODUCT_NAME = xpico;
+			};
+			name = Debug;
+		};
+		D0700CFD1472A0F500ACAB11 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				GCC_WARN_CHECK_SWITCH_STATEMENTS = NO;
+				GCC_WARN_INHIBIT_ALL_WARNINGS = NO;
+				"OTHER_LDFLAGS[arch=*]" = (
+					"-ltermcap",
+					"-lncurses",
+					"-lreadline",
+				);
+				PRODUCT_NAME = xpico;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		D0700CEB1472A0F500ACAB11 /* Build configuration list for PBXProject "xpico" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D0700CF91472A0F500ACAB11 /* Debug */,
+				D0700CFA1472A0F500ACAB11 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		D0700CFB1472A0F500ACAB11 /* Build configuration list for PBXNativeTarget "xpico" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D0700CFC1472A0F500ACAB11 /* Debug */,
+				D0700CFD1472A0F500ACAB11 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = D0700CE81472A0F500ACAB11 /* Project object */;
+}
