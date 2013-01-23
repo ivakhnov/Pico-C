@@ -107,6 +107,9 @@ static _NIL_TYPE_ RPR(_NIL_TYPE_);
 static _NIL_TYPE_ SET(_NIL_TYPE_);
 static _NIL_TYPE_ SMC(_NIL_TYPE_);
 static _NIL_TYPE_ TBL(_NIL_TYPE_);
+static _NIL_TYPE_ LTBL(_NIL_TYPE_); // Added Lazy Tabulation
+static _NIL_TYPE_ LTBLC(_NIL_TYPE_); // Added for concrete part of lazy tabulation (when defining)
+static _NIL_TYPE_ LTBlc(_NIL_TYPE_);// Added
 static _NIL_TYPE_ TRM(_NIL_TYPE_);
 static _NIL_TYPE_ TRm(_NIL_TYPE_);
 static _NIL_TYPE_ UNR(_NIL_TYPE_);
@@ -516,6 +519,11 @@ static _NIL_TYPE_ REF(_NIL_TYPE_)
                _stk_push_CNT_(IDX);
                _stk_push_CNT_(EXP);
                break;
+             case _BRC_TOKEN_:
+               READ_TOKEN();
+               _stk_poke_CNT_(LTBL);
+               _stk_push_CNT_(LTBLC);
+               break;
              default:
                _stk_poke_CNT_(VAR); }
          break;
@@ -651,6 +659,75 @@ static _NIL_TYPE_ TBL(_NIL_TYPE_)
    _ag_set_TBL_IDX_(tbl, idx);
    _stk_poke_EXP_(tbl);
    _stk_zap_CNT_(); }
+
+/*------------------------------------------------------------------------*/
+/*  TBL                                                                   */
+/*     expr-stack: [... ... ... ... NAM EXP] -> [... ... ... ... ... TBL] */
+/*     cont-stack: [... ... ... ... CNT TBL] -> [... ... ... ... ... CNT] */
+/*------------------------------------------------------------------------*/
+static _NIL_TYPE_ LTBL(_NIL_TYPE_)
+{ _EXP_TYPE_ arg, nam, ltbl;
+  _mem_claim_();
+  ltbl = _ag_make_LTBL_();
+  _stk_pop_EXP_(arg);
+  _stk_peek_EXP_(nam);
+  _ag_set_LTBL_NAM_(ltbl, nam);
+  _ag_set_LTBL_ARG_(ltbl, arg);
+  _stk_poke_EXP_(ltbl);
+  _stk_zap_CNT_(); }
+
+/*------------------------------------------------------------------------*/
+/*  LTBl                                                                  */
+/*     expr-stack: [... ... ... ... ... NAM] -> [... ... ... ... NAM *E*] */
+/*     cont-stack: [... ... ... ... CNT NRY] -> [... ... ... ... ... CNT] */
+/*                                                                        */
+/*     expr-stack: [... ... ... ... ... NAM] -> [... ... ... ... NAM *1*] */
+/*     cont-stack: [... ... ... ... CNT NRY] -> [... ... ... CNT NR1 EXP] */
+/*------------------------------------------------------------------------*/
+static _NIL_TYPE_ LTBLC(_NIL_TYPE_)
+ { _stk_claim_();
+   if (current_token == _CBR_TOKEN_)
+     { READ_TOKEN();
+       _stk_push_EXP_(_VOID_);
+       _stk_zap_CNT_(); }
+   else
+     { _stk_push_EXP_(_ONE_);
+       _stk_poke_CNT_(LTBlc);
+       _stk_push_CNT_(EXP); }}
+
+/*------------------------------------------------------------------------*/
+/*  LTBlc                                                                 */
+/*     expr-stack: [... ... ... ... NAM EXP] -> [... ... ... ... NAM EXP] */
+/*     cont-stack: [... ... ... ... CNT IDX] -> [... ... ... ... ... CNT] */
+/*------------------------------------------------------------------------*/
+static _NIL_TYPE_ LTBlc(_NIL_TYPE_)
+{ _EXP_TYPE_ exp, nbr, tab;
+   _UNS_TYPE_ ctr;
+   _stk_claim_();
+   _stk_pop_EXP_(exp);
+   _stk_peek_EXP_(nbr);
+   _stk_poke_EXP_(exp);
+   switch (current_token)
+     { case _CBR_TOKEN_:
+         READ_TOKEN();
+         ctr = _ag_get_NBU_(nbr);
+         _mem_claim_SIZ_(ctr);
+         tab = _ag_make_TAB_(ctr);
+         do
+           { _stk_pop_EXP_(exp);
+             _ag_set_TAB_EXP_(tab, ctr, exp); }
+         while (--ctr);
+         _stk_push_EXP_(tab);
+         _stk_zap_CNT_();
+         break;
+       case _COM_TOKEN_:
+         READ_TOKEN();
+         nbr = _ag_succ_NBR_(nbr);
+         _stk_push_EXP_(nbr);
+         _stk_push_CNT_(EXP);
+         break;
+       default:
+         _scan_error_(_CBR_ERROR_); }}
 
 /*------------------------------------------------------------------------*/
 /*  TRM                                                                   */

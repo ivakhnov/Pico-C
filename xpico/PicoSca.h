@@ -28,7 +28,10 @@ typedef enum  { _AOP_TOKEN_ =  0,
                 _RPR_TOKEN_ = 16,
                 _SMC_TOKEN_ = 17,
                 _TXT_TOKEN_ = 18,
-                _XOP_TOKEN_ = 19 } _TKN_TYPE_;
+                _XOP_TOKEN_ = 19,
+                //New tokens for lazy tabs
+                _BRC_TOKEN_ = 20,
+                _CBR_TOKEN_ = 21 } _TKN_TYPE_;
 
 
 /* public prototypes */

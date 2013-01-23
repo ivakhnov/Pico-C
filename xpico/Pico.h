@@ -46,6 +46,7 @@
 /*   _UDI_ERROR_  ->  undefined identifier                                */
 /*   _USR_ERROR_  ->  user error                                          */
 /*   _ZDV_ERROR_  ->  zero division                                       */
+/*   _CBR_ERROR_  ->  right colon-bracket expected                        */
 /*------------------------------------------------------------------------*/
 
 /* public types */
@@ -97,7 +98,8 @@ typedef enum { _DO_ESCAPE_   = -3,
                _TXT_ERROR_   = 34,
                _UDI_ERROR_   = 35,
                _USR_ERROR_   = 36,
-               _ZDV_ERROR_   = 37 } _RES_TYPE_;
+               _ZDV_ERROR_   = 37,
+               _CBR_ERROR_   = 28 } _RES_TYPE_;
 
 typedef enum { _ESCAPE_NO_   =  0,
                _ESCAPE_YES_  =  1 } _ESC_TYPE_;

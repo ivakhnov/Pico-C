@@ -203,6 +203,10 @@ static const _UNS_TYPE_    equal_mask = (1<<Eql);
 
 static const _UNS_TYPE_      wsp_mask = (1<<Eol)+(1<<Wsp);
 
+static const _UNS_TYPE_      col_mask = (1<<Col);   // Added for lazy tabs
+
+static const _UNS_TYPE_      rbr_mask = (1<<Rbr);   // Added for lazy tabs
+
 /* private functions */
 
 static _NIL_TYPE_ scan_store_next_ch(_NIL_TYPE_)
@@ -295,9 +299,13 @@ static _TKN_TYPE_ scan_Cat(_NIL_TYPE_)
  { SCAN_NEXT_CH();
    return _CAT_TOKEN_; }
 
+// Added CBR ==>  :] for lazy tabs
 static _TKN_TYPE_ scan_Col(_NIL_TYPE_)
  { SCAN_NEXT_CH();
-   if (SCAN_CHECK(equal_mask))
+   if (SCAN_CHECK(rbr_mask))
+     { SCAN_NEXT_CH();
+       return _CBR_TOKEN_; }
+   else if (SCAN_CHECK(equal_mask))
      { SCAN_NEXT_CH();
        return _CEQ_TOKEN_; }
    else
@@ -318,9 +326,14 @@ static _TKN_TYPE_ scan_Lbc(_NIL_TYPE_)
  { SCAN_NEXT_CH();
    return _LBC_TOKEN_; }
 
+// Added BRC ==>  [: for lazy tabs
 static _TKN_TYPE_ scan_Lbr(_NIL_TYPE_)
  { SCAN_NEXT_CH();
-   return _LBR_TOKEN_; }
+   if (SCAN_CHECK(col_mask))
+     { SCAN_NEXT_CH();
+       return _BRC_TOKEN_; }
+   else
+     return _LBR_TOKEN_; }
 
 static _TKN_TYPE_ scan_Lpr(_NIL_TYPE_)
  { SCAN_NEXT_CH();

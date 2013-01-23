@@ -82,7 +82,8 @@ static char * errors[] = {
    "non-terminated text",
    "undefined identifier",
    "user error",
-   "zero division"
+   "zero division",
+   "right colon-bracket expected"
 };
 
 static void show(const char s[],
