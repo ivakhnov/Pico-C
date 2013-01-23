@@ -31,6 +31,10 @@
 #define TBL_NAM_INDEX 1
 #define TBL_IDX_INDEX 2
 
+// Added Lazy Tabulation
+#define LTBL_NAM_INDEX 1
+#define LTBL_IDX_INDEX 2
+
 #define DEF_INV_INDEX 1
 #define DEF_EXP_INDEX 2
 
@@ -72,6 +76,7 @@
 #define _VAR_SIZE_    1
 #define _APL_SIZE_    2
 #define _TBL_SIZE_    2
+#define _LTBL_SIZE_   2 // Added Lazy Tabulation
 #define _DEF_SIZE_    2
 #define _SET_SIZE_    2
 #define _DCT_SIZE_    3
@@ -119,6 +124,10 @@
 
 #define _ag_make_TBL_()\
   _mem_make_chunk_(_TBL_SIZE_, _TBL_TAG_)
+
+// Added Lazy Tabulation
+#define _ag_make_LTBL_()\
+  _mem_make_chunk_(_LTBL_SIZE_, _LTBL_TAG_)
 
 #define _ag_make_DEF_()\
   _mem_make_chunk_(_DEF_SIZE_, _DEF_TAG_)
@@ -189,6 +198,13 @@
 
 #define _ag_get_TBL_IDX_(TBL)\
  _mem_get_exp_(CHK_AGR(TBL, _TBL_TAG_), TBL_IDX_INDEX)
+
+// Added Lazy Tabulation
+#define _ag_get_LTBL_NAM_(LTBL)\
+ _mem_get_exp_(CHK_AGR(LTBL, _LTBL_TAG_), LTBL_NAM_INDEX)
+
+#define _ag_get_LTBL_ARG_(LTBL)\
+ _mem_get_exp_(CHK_AGR(LTBL, _LTBL_TAG_), LTBL_IDX_INDEX)
 
 #define _ag_get_DEF_INV_(DEF)\
  _mem_get_exp_(CHK_AGR(DEF, _DEF_TAG_), DEF_INV_INDEX)
@@ -265,6 +281,13 @@
 #define _ag_set_TBL_IDX_(TBL, IDX)\
  _mem_set_exp_(CHK_AGR(TBL, _TBL_TAG_), TBL_IDX_INDEX, IDX)
 
+// Added Lazy Tabulation setters
+#define _ag_set_LTBL_NAM_(LTBL, NAM)\
+ _mem_set_exp_(CHK_AGR(LTBL, _LTBL_TAG_), LTBL_NAM_INDEX, NAM)
+
+#define _ag_set_LTBL_ARG_(LTBL, IDX)\
+ _mem_set_exp_(CHK_AGR(LTBL, _LTBL_TAG_), LTBL_IDX_INDEX, IDX)
+
 #define _ag_set_DEF_INV_(DEF, REF)\
  _mem_set_exp_(CHK_AGR(DEF, _DEF_TAG_), DEF_INV_INDEX, REF)
 
@@ -327,9 +350,9 @@ typedef enum { _VOI_TAG_ = 0 ,
                _SET_TAG_ = 10,
                _DCT_TAG_ = 11,
                _ENV_TAG_ = 12,
-               _NY1_TAG_ = 13,
-               _NY2_TAG_ = 14,
-               _NY3_TAG_ = 15,
+               _LTAB_TAG_ = 13, // Added new tags for lazy tables
+               _LTBL_TAG_ = 14,
+               _LAZY_TAG_ = 15,
                _NBR_TAG_ = 16 } _TAG_TYPE_;
 
 typedef          char     _BUF_TYPE_[_BUF_SIZE_];
