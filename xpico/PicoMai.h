@@ -35,6 +35,11 @@
 #define LTBL_NAM_INDEX 1
 #define LTBL_IDX_INDEX 2
 
+// Added Lazy Table
+#define LTAB_CONCR_INDEX 1
+#define LTAB_LZEXP_INDEX 2
+#define LTAB_DCT_INDEX 3
+
 #define DEF_INV_INDEX 1
 #define DEF_EXP_INDEX 2
 
@@ -77,6 +82,7 @@
 #define _APL_SIZE_    2
 #define _TBL_SIZE_    2
 #define _LTBL_SIZE_   2 // Added Lazy Tabulation
+#define _LTAB_SIZE_   3 // Added Lazy Table
 #define _DEF_SIZE_    2
 #define _SET_SIZE_    2
 #define _DCT_SIZE_    3
@@ -109,6 +115,10 @@
 
 #define _ag_make_TAB_(SIZ)\
   _mem_make_chunk_(SIZ, _TAB_TAG_)
+
+// Added Lazy Table
+#define _ag_make_LTAB_()\
+  _mem_make_chunk_(_LTAB_SIZE_, _LTAB_TAG_)
 
 #define _ag_make_FUN_()\
   _mem_make_chunk_(_FUN_SIZE_, _FUN_TAG_)
@@ -165,6 +175,16 @@
 
 #define _ag_get_TAB_CNT_(TAB, IDX)\
  _mem_get_cnt_(TAB, IDX)
+
+// Added Lazy Table
+#define _ag_get_LTAB_CONCR_(LTAB)\
+ _mem_get_exp_(CHK_AGR(LTAB, _LTAB_TAG_), LTAB_CONCR_INDEX)
+
+#define _ag_get_LTAB_LZEXP_(LTAB)\
+ _mem_get_exp_(CHK_AGR(LTAB, _LTAB_TAG_), LTAB_LZEXP_INDEX)
+
+#define _ag_get_LTAB_DCT_(LTAB)\
+ _mem_get_exp_(CHK_AGR(LTAB, _LTAB_TAG_), LTAB_DCT_INDEX)
 
 #define _ag_get_NBR_(NBR)\
  _mem_get_nbr_(CHK_AGR(NBR, _NBR_TAG_))
@@ -253,6 +273,16 @@
 
 #define _ag_set_TAB_CNT_(TAB, IDX, CNT)\
  _mem_set_cnt_(TAB, IDX, CNT)
+
+// Added Lazy Table
+#define _ag_set_LTAB_CONCR_(LTAB, CONCR)\
+ _mem_set_exp_(CHK_AGR(LTAB, _LTAB_TAG_), LTAB_CONCR_INDEX, CONCR)
+
+#define _ag_set_LTAB_LZEXP_(LTAB, LZEXP)\
+ _mem_set_exp_(CHK_AGR(LTAB, _LTAB_TAG_), LTAB_LZEXP_INDEX, LZEXP)
+
+#define _ag_set_LTAB_DCT_(LTAB, DCT)\
+ _mem_set_exp_(CHK_AGR(LTAB, _LTAB_TAG_), LTAB_DCT_INDEX, DCT)
 
 #define _ag_set_FUN_NAM_(FUN, NAM)\
  _mem_set_exp_(CHK_AGR(FUN, _FUN_TAG_), FUN_NAM_INDEX, NAM)
