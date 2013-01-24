@@ -30,7 +30,9 @@ static _NIL_TYPE_ BND(_NIL_TYPE_);
 static _NIL_TYPE_ CHG(_NIL_TYPE_);
 static _NIL_TYPE_ DEF(_NIL_TYPE_);
 static _NIL_TYPE_ IDX(_NIL_TYPE_);
+static _NIL_TYPE_ LARG(_NIL_TYPE_); // Added for concrete argument of lazy tabulation
 static _NIL_TYPE_ INI(_NIL_TYPE_);
+static _NIL_TYPE_ INIC(_NIL_TYPE_); // Added for Lazy Tabulation
 static _NIL_TYPE_ NYI(_NIL_TYPE_);
 static _NIL_TYPE_ REF(_NIL_TYPE_);
 static _NIL_TYPE_ RET(_NIL_TYPE_);
@@ -382,6 +384,16 @@ static _NIL_TYPE_ DEF(_NIL_TYPE_)
         _stk_poke_CNT_(IDX);
         _stk_push_CNT_(EXP);
         break;
+      case _LTBL_TAG_:   // Added Lazy Tabulation
+        nam = _ag_get_LTBL_NAM_(inv);
+        arg = _ag_get_LTBL_ARG_(inv);
+        _ag_set_DCT_NAM_(dct, nam);
+        _stk_poke_EXP_(dct);
+        _stk_push_EXP_(exp);
+        _stk_push_EXP_(arg);
+        _stk_poke_CNT_(LARG);
+        _stk_push_CNT_(EXP);
+        break;
       default:
         _error_(_AGR_ERROR_); }}
 
@@ -424,6 +436,85 @@ static _NIL_TYPE_ IDX(_NIL_TYPE_)
          _error_(_SIZ_ERROR_);}
    else
      _error_(_SIZ_ERROR_); }
+
+/*------------------------------------------------------------------------*/
+/*  LARG                                                                  */
+/*     expr-stack: [... ... ... DCT EXP NBR] -> [... DCT TAB EXP *1* EXP] */
+/*     cont-stack: [... ... ... ... ... IDX] -> [... ... ... ... INI EXP] */
+/*                                                                        */
+/*     expr-stack: [... ... ... DCT EXP NBR] -> [... ... ... ... ... *E*] */
+/*     cont-stack: [... ... ... ... ... IDX] -> [... ... ... ... ... ...] */
+/*------------------------------------------------------------------------*/
+static _NIL_TYPE_ LARG(_NIL_TYPE_)
+ { _EXP_TYPE_ dct, exp, val, ltab;
+   _TAG_TYPE_ tag;
+   _stk_claim_();
+   _stk_pop_EXP_(val);
+  tag = _ag_get_TAG_(val);
+   if (tag == _VOI_TAG_)
+     { _stk_pop_EXP_(exp);
+       ltab = _ag_make_LTAB_();
+       _stk_peek_EXP_(dct);
+       _ag_set_DCT_VAL_(dct, ltab);
+       _ag_set_DCT_DCT_(dct, _DCT_);
+       _DCT_ = dct;
+       _ag_set_LTAB_CONCR_(ltab, _EMPTY_);
+       _ag_set_LTAB_LZEXP_(ltab, exp);
+       _ag_set_LTAB_DCT_(ltab, _DCT_);
+       _stk_poke_EXP_(ltab);
+       _stk_zap_CNT_(); }
+   else if (tag == _TAB_TAG_)
+     { ltab = _ag_make_LTAB_();
+       _stk_peek_EXP_(exp);
+       _stk_poke_EXP_(ltab);
+       _stk_push_EXP_(exp);
+       _stk_push_EXP_(val);
+       _stk_push_EXP_(_ONE_);
+       exp = _ag_get_TAB_EXP_(val, 1);
+       _stk_push_EXP_(exp);
+       _stk_poke_CNT_(INIC);
+       _stk_push_CNT_(EXP); }
+   else
+     //_error_(_invalidConcreteArguments_ERROR_);
+     _error_(_SIZ_ERROR_); }
+
+/*------------------------------------------------------------------------*/
+/*  INIC                                                                  */
+/*     expr-stack: [... DCT TAB EXP NBR VAL] -> [... DCT TAB EXP NBR EXP] */
+/*     cont-stack: [... ... ... ... ... INI] -> [... ... ... ... INI EXP] */
+/*                                                                        */
+/*     expr-stack: [... DCT TAB EXP NBR VAL] -> [... ... ... ... ... TAB] */
+/*     cont-stack: [... ... ... ... ... INI] -> [... ... ... ... ... ...] */
+/*------------------------------------------------------------------------*/
+static _NIL_TYPE_ INIC(_NIL_TYPE_)
+ { _EXP_TYPE_ dct, exp, nbr, ltab, concreteTab, val;
+   _UNS_TYPE_ ctr, siz;
+   _stk_pop_EXP_(val);
+   _stk_pop_EXP_(nbr);
+   _stk_peek_EXP_(concreteTab);
+   siz = _ag_get_TAB_SIZ_(concreteTab);
+   ctr = _ag_get_NBU_(nbr);
+   _ag_set_TAB_EXP_(concreteTab, ctr, val);
+   if (ctr < siz)
+     { nbr = _ag_succ_NBR_(nbr);
+       ctr = _ag_get_NBU_(nbr);
+       _stk_push_EXP_(nbr);
+       exp = _ag_get_TAB_EXP_(concreteTab, ctr);
+       _stk_push_EXP_(exp);
+       _stk_push_CNT_(EXP); }
+   else
+     { _stk_zap_EXP_();
+       _stk_pop_EXP_(exp);
+       _stk_pop_EXP_(ltab);
+       _stk_peek_EXP_(dct);
+       _ag_set_DCT_VAL_(dct, ltab);
+       _ag_set_DCT_DCT_(dct, _DCT_);
+       _DCT_ = dct;
+       _ag_set_LTAB_CONCR_(ltab, concreteTab);
+       _ag_set_LTAB_LZEXP_(ltab, exp);
+       _ag_set_LTAB_DCT_(ltab, _DCT_);
+       _stk_poke_EXP_(ltab);
+       _stk_zap_CNT_(); }}
 
 /*------------------------------------------------------------------------*/
 /*  INI                                                                   */
