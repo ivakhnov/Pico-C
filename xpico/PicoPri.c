@@ -22,6 +22,7 @@
 #define VAR_TEXT "<variable>"
 #define APL_TEXT "<application>"
 #define TBL_TEXT "<tabulation>"
+#define LTBL_TEXT "<lazy tabulation>" // Added Lazy Tabulation
 #define DEF_TEXT "<definition>"
 #define SET_TEXT "<assignment>"
 #define MSG_TEXT "<message>"
@@ -46,6 +47,8 @@ static _NIL_TYPE_ SET(_NIL_TYPE_);
 static _NIL_TYPE_ TAB(_NIL_TYPE_);
 static _NIL_TYPE_ TAb(_NIL_TYPE_);
 static _NIL_TYPE_ TBL(_NIL_TYPE_);
+static _NIL_TYPE_ LTAB(_NIL_TYPE_); // Added Lazy Table
+static _NIL_TYPE_ LTAb(_NIL_TYPE_); // Added Lazy Table
 static _NIL_TYPE_ TXT(_NIL_TYPE_);
 static _NIL_TYPE_ VAR(_NIL_TYPE_);
 static _NIL_TYPE_ VOI(_NIL_TYPE_);
@@ -66,7 +69,7 @@ static const _CNT_TYPE_ CNT_tab[] =
      SET,
      DCT,
      ENV,
-     NYI,
+     LTAB,
      NYI,
      NYI,
      NBR };
@@ -249,7 +252,7 @@ static _NIL_TYPE_ TAB(_NIL_TYPE_)
 /*  TAb                                                                   */
 /*     expr-stack: [... ... ... TAB NBR VOI] -> [... ... ... TAB NBR EXP] */
 /*     cont-stack: [... ... ... ... ... TAb] -> [... ... ... ... TAb EXP] */
-/*                                                                              */
+/*                                                                        */
 /*     expr-stack: [... ... ... ... TAB NBR] -> [... ... ... ... ... EOL] */
 /*     cont-stack: [... ... ... ... ... TAb] -> [... ... ... ... ... ...] */
 /*------------------------------------------------------------------------*/
@@ -272,6 +275,63 @@ static _NIL_TYPE_ TAb(_NIL_TYPE_)
      { _stk_poke_EXP_(_EOLN_);
        _stk_zap_CNT_();
        _print_("]"); }}
+
+/*------------------------------------------------------------------------*/
+/*  LTAB                                                                  */
+/*     expr-stack: [... ... ... ... ... TAB] -> [... ... ... TAB *1* EXP] */
+/*     cont-stack: [... ... ... ... ... TAB] -> [... ... ... ... TAb EXP] */
+/*                                                                        */
+/*     expr-stack: [... ... ... ... ... TAB] -> [... ... ... ... ... EOL] */
+/*     cont-stack: [... ... ... ... ... TAB] -> [... ... ... ... ... ...] */
+/*------------------------------------------------------------------------*/
+static _NIL_TYPE_ LTAB(_NIL_TYPE_)
+ { _EXP_TYPE_ ltab, exp;
+   _UNS_TYPE_ siz;
+   _stk_claim_();
+   _stk_peek_EXP_(ltab);
+   exp = _ag_get_LTAB_CONCR_(ltab);
+   _stk_poke_EXP_(exp);
+   
+   siz = _ag_get_TAB_SIZ_(exp);
+   if (siz > 0)
+     { exp = _ag_get_TAB_EXP_(exp, 1);
+       _stk_push_EXP_(_ONE_);
+       _stk_push_EXP_(exp);
+       _stk_poke_CNT_(LTAb);
+       _stk_push_CNT_(EXP);
+       _print_("[: "); }
+   else
+     { _stk_poke_EXP_(_EOLN_);
+       _stk_zap_CNT_();
+       _print_("[: ... :]"); }}
+
+/*------------------------------------------------------------------------*/
+/*  LTAb                                                                  */
+/*     expr-stack: [... ... ... TAB NBR VOI] -> [... ... ... TAB NBR EXP] */
+/*     cont-stack: [... ... ... ... ... TAb] -> [... ... ... ... TAb EXP] */
+/*                                                                        */
+/*     expr-stack: [... ... ... ... TAB NBR] -> [... ... ... ... ... EOL] */
+/*     cont-stack: [... ... ... ... ... TAb] -> [... ... ... ... ... ...] */
+/*------------------------------------------------------------------------*/
+static _NIL_TYPE_ LTAb(_NIL_TYPE_)
+ { _EXP_TYPE_ nbr, exp, voi;
+   _UNS_TYPE_ idx, siz;
+   _stk_claim_();
+   _stk_pop_EXP_(voi);
+   _stk_pop_EXP_(nbr);
+   _stk_peek_EXP_(exp);
+   idx = _ag_get_NBU_(nbr);
+   siz = _ag_get_TAB_SIZ_(exp);
+   if (idx < siz)
+     { _stk_push_EXP_(_ag_succ_NBR_(nbr));
+       exp = _ag_get_TAB_EXP_(exp, idx+1);
+       _stk_push_EXP_(exp);
+       _stk_push_CNT_(EXP);
+       _print_(", "); }
+   else
+     { _stk_poke_EXP_(_EOLN_);
+       _stk_zap_CNT_();
+       _print_(", ... :]"); }}
 
 /*------------------------------------------------------------------------*/
 /*  VAR                                                                   */
