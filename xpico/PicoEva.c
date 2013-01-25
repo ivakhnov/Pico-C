@@ -26,21 +26,24 @@ static _NIL_TYPE_ APL(_NIL_TYPE_);
 static _NIL_TYPE_ ASS(_NIL_TYPE_);
 static _NIL_TYPE_ ATA(_NIL_TYPE_);
 static _NIL_TYPE_ ATV(_NIL_TYPE_);
+static _NIL_TYPE_ ATL(_NIL_TYPE_); // Added for evaluation of Lazy Tabulation (recursion)
 static _NIL_TYPE_ BND(_NIL_TYPE_);
 static _NIL_TYPE_ CHG(_NIL_TYPE_);
 static _NIL_TYPE_ DEF(_NIL_TYPE_);
 static _NIL_TYPE_ IDX(_NIL_TYPE_);
-static _NIL_TYPE_ LARG(_NIL_TYPE_); // Added for concrete argument of lazy tabulation
+static _NIL_TYPE_ LARG(_NIL_TYPE_); // Added for definition (list of arguments for concrete part)
 static _NIL_TYPE_ INI(_NIL_TYPE_);
-static _NIL_TYPE_ INIC(_NIL_TYPE_); // Added for Lazy Tabulation
+static _NIL_TYPE_ INIC(_NIL_TYPE_); // Added for definition (evaluation of concrete part)
 static _NIL_TYPE_ NYI(_NIL_TYPE_);
 static _NIL_TYPE_ REF(_NIL_TYPE_);
+static _NIL_TYPE_ LREF(_NIL_TYPE_); // Added for reference in a lazy table (access tabulation)
 static _NIL_TYPE_ RET(_NIL_TYPE_);
 static _NIL_TYPE_ RPL(_NIL_TYPE_);
 static _NIL_TYPE_ SET(_NIL_TYPE_);
 static _NIL_TYPE_ SLF(_NIL_TYPE_);
 static _NIL_TYPE_ SWP(_NIL_TYPE_);
 static _NIL_TYPE_ TBL(_NIL_TYPE_);
+static _NIL_TYPE_ LTBL(_NIL_TYPE_); // Added Lazy Tabulation (access)
 static _NIL_TYPE_ VAR(_NIL_TYPE_);
 
 /* private variables */
@@ -60,8 +63,8 @@ static const _BYT_TYPE_ TAB_tab[] =
      1,    /* DCT */
      1,    /* ENV */
      0,    /* NYI */
-     0,    /* NYI */
-     0,    /* NYI */
+     1,    /* LTBL */
+     0,    /* LAZY */
      0 };  /* NBR */
 
 static const _CNT_TYPE_ CNT_tab[] =
@@ -79,8 +82,8 @@ static const _CNT_TYPE_ CNT_tab[] =
      SLF,    /* DCT */
      SLF,    /* ENV */
      NYI,    /* NYI */
-     NYI,    /* NYI */
-     NYI,    /* NYI */
+     LTBL,   /* LTBL */
+     SLF,    /* NYI */
      SLF };  /* NBR */
 
 /* private functions */
@@ -244,6 +247,33 @@ static _NIL_TYPE_ ATV(_NIL_TYPE_)
            _stk_push_CNT_(RET); }
        _stk_push_CNT_(EXP);
        _DCT_ = dct; }}
+       
+/*------------------------------------------------------------------------*/
+/*  ATL                                                                   */
+/*     expr-stack: [EXP DCT ARG TAB NBR APL] -> [EXP DCT ARG TAB NBR APL] */
+/*     cont-stack: [... ... ... ... ... ATA] -> [... ... ... ... ... ATA] */
+/*                                                                        */
+/*     expr-stack: [EXP DCT ARG TAB NBR APL] -> [... ... ... ... DCT EXP] */
+/*     cont-stack: [... ... ... ... ... ATA] -> [... ... ... ... RET EXP] */
+/*                                                                        */
+/*     expr-stack: [EXP DCT ARG TAB NBR APL] -> [... ... ... ... ... EXP] */
+/*     cont-stack: [... ... ... ... ... ATA] -> [... ... ... ... ... EXP] */
+/*------------------------------------------------------------------------*/
+static _NIL_TYPE_ ATL(_NIL_TYPE_)
+ { _EXP_TYPE_ act, apl, val, dct, exp, fun, nam, nbr, concreteTab;
+   _CNT_TYPE_ cnt;
+   _UNS_TYPE_ pos, siz;
+   _mem_claim_();
+   _stk_pop_EXP_(val);
+   _stk_pop_EXP_(dct);
+   _stk_pop_EXP_(nbr);
+   _stk_peek_EXP_(concreteTab);
+   
+   pos = _ag_get_NBU_(nbr);
+   _ag_set_TAB_EXP_(concreteTab, pos, val);
+   _stk_poke_EXP_(val);
+   _stk_zap_CNT_(); 
+   }
 
 /*------------------------------------------------------------------------*/
 /*  BND                                                                   */
@@ -475,8 +505,7 @@ static _NIL_TYPE_ LARG(_NIL_TYPE_)
        _stk_poke_CNT_(INIC);
        _stk_push_CNT_(EXP); }
    else
-     //_error_(_invalidConcreteArguments_ERROR_);
-     _error_(_SIZ_ERROR_); }
+     _error_(_IAG_ERROR_); }
 
 /*------------------------------------------------------------------------*/
 /*  INIC                                                                  */
@@ -573,6 +602,89 @@ static _NIL_TYPE_ REF(_NIL_TYPE_)
                _stk_zap_CNT_(); }
            else
              _error_(_RNG_ERROR_); }
+       else
+        _error_(_IIX_ERROR_); }
+   else
+     _error_(_NAT_ERROR_); }
+     
+/*------------------------------------------------------------------------*/
+/*  LREF                                                                  */
+/*     expr-stack: [... ... ... ... TAB NBR] -> [... ... ... ... ... VAL] */
+/*     cont-stack: [... ... ... ... ... REF] -> [... ... ... ... ... ...] */
+/*------------------------------------------------------------------------*/
+static _NIL_TYPE_ LREF(_NIL_TYPE_)
+ { _EXP_TYPE_ dct, exp, nbr, tab, ltab, temp, newtab;
+   _UNS_TYPE_ ctr, siz;
+   _TAG_TYPE_ tag;
+   _stk_pop_EXP_(nbr);
+   _stk_pop_EXP_(tab);
+   _stk_peek_EXP_(ltab);
+   tag = _ag_get_TAG_(tab);
+   if (TAB_tab[tag])
+     { siz = _ag_get_TAB_SIZ_(tab);
+       tag = _ag_get_TAG_(nbr);
+       if (tag == _NBR_TAG_)
+         { dct = _ag_get_LTAB_DCT_(ltab);
+           ctr = _ag_get_NBU_(nbr);
+           if ((ctr > 0) && (ctr <= siz))
+             { exp = _ag_get_TAB_EXP_(tab, ctr);
+               tag = _ag_get_TAG_(exp);
+               if (tag == _LAZY_TAG_)
+                 { nbr = _ag_make_NBU_(ctr);
+                       // evaluate the expression
+                   exp = _ag_get_LTAB_LZEXP_(ltab);
+                   //dct = _ag_get_LTAB_DCT_(ltab);
+                   _stk_poke_EXP_(tab);
+                   _stk_push_EXP_(nbr);
+                   _stk_push_EXP_(dct);
+                   _stk_push_EXP_(exp);
+                   _stk_poke_CNT_(ATL);
+                   _stk_push_CNT_(EXP); }
+               else {
+               _stk_poke_EXP_(exp);
+               _stk_zap_CNT_(); }}
+           else {
+                // create a new concrete table
+             _mem_claim_SIZ_(ctr);
+             newtab = _ag_make_TAB_(ctr);
+             _ag_set_LTAB_CONCR_(ltab, newtab);
+                // fill the new concrete table
+             ctr--;
+             exp = _ag_make_LAZY_();
+             while (ctr > siz) {
+                _ag_set_TAB_EXP_(newtab, ctr, exp);
+                ctr--; }
+             while (ctr > 0) {
+                exp = _ag_get_TAB_EXP_(tab, ctr);
+                _ag_set_TAB_EXP_(newtab, ctr, exp);
+                ctr--; }
+             siz = _ag_get_TAB_SIZ_(newtab);
+             nbr = _ag_make_NBU_(siz);
+                // evaluate the expression
+             exp = _ag_get_LTAB_LZEXP_(ltab);
+             //dct = _ag_get_LTAB_DCT_(ltab);
+             _stk_poke_EXP_(newtab);
+             _stk_push_EXP_(nbr);
+             _stk_push_EXP_(dct);
+             _stk_push_EXP_(exp);
+             _stk_poke_CNT_(ATL);
+             _stk_push_CNT_(EXP);
+             
+             /*_stk_poke_EXP_(newtab);
+             _stk_push_EXP_(_ONE_);
+             _stk_push_EXP_(dct);
+             _stk_push_EXP_(exp);
+             _stk_push_EXP_(_ag_make_NBR_(siz));
+             _stk_poke_CNT_(ATL);*/
+             
+/*                // save it in the new concrete table, on last position
+             _ag_set_TAB_EXP_(newtab, siz, exp);
+             //_stk_poke_EXP_(exp);
+             //_stk_zap_CNT_();*/
+
+            }
+          }
+             //_error_(_RNG_ERROR_); }
        else
         _error_(_IIX_ERROR_); }
    else
@@ -740,6 +852,32 @@ static _NIL_TYPE_ TBL(_NIL_TYPE_)
    _stk_push_EXP_(idx);
    _stk_poke_CNT_(REF);
    _stk_push_CNT_(EXP); }
+   
+/*------------------------------------------------------------------------*/
+/*  LTBL                                                                  */
+/*     expr-stack: [... ... ... ... ... TBL] -> [... ... ... ... TAB EXP] */
+/*     cont-stack: [... ... ... ... ... TBL] -> [... ... ... ... REF EXP] */
+/*------------------------------------------------------------------------*/
+static _NIL_TYPE_ LTBL(_NIL_TYPE_)
+ { _EXP_TYPE_ dct, idx, val, nam, ltab, concreteTab, ltbl;
+   _TAG_TYPE_ tag;
+   _stk_claim_();
+   _stk_peek_EXP_(ltbl);
+   nam = _ag_get_TBL_NAM_(ltbl);
+   val = _ag_get_TBL_IDX_(ltbl);
+   tag = _ag_get_TAG_(val);
+   if (tag == _TAB_TAG_) 
+      { idx = _ag_get_TAB_EXP_(val, 1);
+        _dct_locate_(nam, dct, _DCT_);
+        ltab = _ag_get_DCT_VAL_(dct);
+        concreteTab = _ag_get_LTAB_CONCR_(ltab);
+        _stk_poke_EXP_(ltab);
+        _stk_push_EXP_(concreteTab);
+        _stk_push_EXP_(idx);
+        _stk_poke_CNT_(LREF);
+        _stk_push_CNT_(EXP); }
+   else 
+      _error_(_IIX_ERROR_); }
 
 /*------------------------------------------------------------------------*/
 /*  VAR                                                                   */
