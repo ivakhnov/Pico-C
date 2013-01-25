@@ -23,6 +23,7 @@
 #define APL_TEXT "<application>"
 #define TBL_TEXT "<tabulation>"
 #define LTBL_TEXT "<lazy tabulation>" // Added Lazy Tabulation
+#define LAZY_TEXT "<lazy>" // Added for lazy members of a Lazy Table
 #define DEF_TEXT "<definition>"
 #define SET_TEXT "<assignment>"
 #define MSG_TEXT "<message>"
@@ -52,6 +53,7 @@ static _NIL_TYPE_ LTAb(_NIL_TYPE_); // Added Lazy Table
 static _NIL_TYPE_ TXT(_NIL_TYPE_);
 static _NIL_TYPE_ VAR(_NIL_TYPE_);
 static _NIL_TYPE_ VOI(_NIL_TYPE_);
+static _NIL_TYPE_ LAZY(_NIL_TYPE_); // Added to print lazy members of Lazy Table
 
 /* private variables */
 
@@ -71,7 +73,7 @@ static const _CNT_TYPE_ CNT_tab[] =
      ENV,
      LTAB,
      NYI,
-     NYI,
+     LAZY,
      NBR };
 
 /* private functions */
@@ -352,6 +354,16 @@ static _NIL_TYPE_ VOI(_NIL_TYPE_)
  { _stk_poke_EXP_(_EOLN_);
    _stk_zap_CNT_();
    _print_(VOI_TEXT); }
+   
+/*------------------------------------------------------------------------*/
+/*  LAZY                                                                  */
+/*     expr-stack: [... ... ... ... ... VOI] -> [... ... ... ... ... EOL] */
+/*     cont-stack: [... ... ... ... ... VOI] -> [... ... ... ... ... ...] */
+/*------------------------------------------------------------------------*/
+static _NIL_TYPE_ LAZY(_NIL_TYPE_)
+ { _stk_poke_EXP_(_EOLN_);
+   _stk_zap_CNT_();
+   _print_(LAZY_TEXT); }
 
 /* public functions */
 
