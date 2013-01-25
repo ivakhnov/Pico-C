@@ -76,6 +76,7 @@
 #define _BUF_SIZE_    32768
 
 #define _VOI_SIZE_    0
+#define _LAZY_SIZE_   0 // Added for a Lazy member in concrete part of Lazy Table
 #define _NAT_SIZE_    2
 #define _FUN_SIZE_    4
 #define _VAR_SIZE_    1
@@ -100,6 +101,10 @@
 
 #define _ag_make_VOI_()\
   _mem_make_chunk_(_VOI_SIZE_, _VOI_TAG_)
+
+// Added for a Lazy member in concrete part of Lazy Table
+#define _ag_make_LAZY_()\
+  _mem_make_chunk_(_LAZY_SIZE_, _LAZY_TAG_)
 
 #define _ag_make_NBR_(SGN)\
   _mem_make_nbr_(SGN)
