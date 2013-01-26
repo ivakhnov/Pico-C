@@ -18,18 +18,18 @@
 
 /* private constants */
 
-#define VOI_TEXT "<void>"
-#define VAR_TEXT "<variable>"
-#define APL_TEXT "<application>"
-#define TBL_TEXT "<tabulation>"
+#define VOI_TEXT  "<void>"
+#define VAR_TEXT  "<variable>"
+#define APL_TEXT  "<application>"
+#define TBL_TEXT  "<tabulation>"
 #define LTBL_TEXT "<lazy tabulation>" // Added Lazy Tabulation
-#define LAZY_TEXT "<lazy>" // Added for lazy members of a Lazy Table
-#define DEF_TEXT "<definition>"
-#define SET_TEXT "<assignment>"
-#define MSG_TEXT "<message>"
-#define DCT_TEXT "<dictionary>"
-#define ENV_TEXT "<environment>"
-#define NYI_TEXT "<not yet implemented>"
+#define LAZY_TEXT "<lazy>"            // Added for lazy members of a Lazy Table
+#define DEF_TEXT  "<definition>"
+#define SET_TEXT  "<assignment>"
+#define MSG_TEXT  "<message>"
+#define DCT_TEXT  "<dictionary>"
+#define ENV_TEXT  "<environment>"
+#define NYI_TEXT  "<not yet implemented>"
 
 #define EXP _print_EXP_
 
@@ -48,11 +48,12 @@ static _NIL_TYPE_ SET(_NIL_TYPE_);
 static _NIL_TYPE_ TAB(_NIL_TYPE_);
 static _NIL_TYPE_ TAb(_NIL_TYPE_);
 static _NIL_TYPE_ TBL(_NIL_TYPE_);
-static _NIL_TYPE_ LTAB(_NIL_TYPE_); // Added Lazy Table
-static _NIL_TYPE_ LTAb(_NIL_TYPE_); // Added Lazy Table
 static _NIL_TYPE_ TXT(_NIL_TYPE_);
 static _NIL_TYPE_ VAR(_NIL_TYPE_);
 static _NIL_TYPE_ VOI(_NIL_TYPE_);
+static _NIL_TYPE_ LTAB(_NIL_TYPE_); // Added Lazy Table
+static _NIL_TYPE_ LTAb(_NIL_TYPE_); // Added Lazy Table
+static _NIL_TYPE_ LTBL(_NIL_TYPE_); // Added Lazy Tabulation
 static _NIL_TYPE_ LAZY(_NIL_TYPE_); // Added to print lazy members of Lazy Table
 
 /* private variables */
@@ -72,7 +73,7 @@ static const _CNT_TYPE_ CNT_tab[] =
      DCT,
      ENV,
      LTAB,
-     NYI,
+     LTBL,
      LAZY,
      NBR };
 
@@ -209,6 +210,16 @@ static _NIL_TYPE_ TBL(_NIL_TYPE_)
  { _stk_poke_EXP_(_EOLN_);
    _stk_zap_CNT_();
    _print_(TBL_TEXT); }
+   
+/*-------------------------------------------------------------------------*/
+/*  TBL                                                                    */
+/*     expr-stack: [... ... ... ... ... LTBL] -> [... ... ... ... ... EOL] */
+/*     cont-stack: [... ... ... ... ... LTBL] -> [... ... ... ... ... ...] */
+/*-------------------------------------------------------------------------*/
+static _NIL_TYPE_ LTBL(_NIL_TYPE_)
+ { _stk_poke_EXP_(_EOLN_);
+   _stk_zap_CNT_();
+   _print_(LTBL_TEXT); }
 
 /*------------------------------------------------------------------------*/
 /*  TXT                                                                   */
@@ -278,14 +289,14 @@ static _NIL_TYPE_ TAb(_NIL_TYPE_)
        _stk_zap_CNT_();
        _print_("]"); }}
 
-/*------------------------------------------------------------------------*/
-/*  LTAB                                                                  */
-/*     expr-stack: [... ... ... ... ... TAB] -> [... ... ... TAB *1* EXP] */
-/*     cont-stack: [... ... ... ... ... TAB] -> [... ... ... ... TAb EXP] */
-/*                                                                        */
-/*     expr-stack: [... ... ... ... ... TAB] -> [... ... ... ... ... EOL] */
-/*     cont-stack: [... ... ... ... ... TAB] -> [... ... ... ... ... ...] */
-/*------------------------------------------------------------------------*/
+/*--------------------------------------------------------------------------*/
+/*  LTAB                                                                    */
+/*     expr-stack: [... ... ... ... ... LTAB] -> [... ... ... TAB *1*  EXP] */
+/*     cont-stack: [... ... ... ... ... LTAB] -> [... ... ... ... LTAb EXP] */
+/*                                                                          */
+/*     expr-stack: [... ... ... ... ... LTAB] -> [... ... ... ... ... EOL]  */
+/*     cont-stack: [... ... ... ... ... LTAB] -> [... ... ... ... ... ...]  */
+/*--------------------------------------------------------------------------*/
 static _NIL_TYPE_ LTAB(_NIL_TYPE_)
  { _EXP_TYPE_ ltab, exp;
    _UNS_TYPE_ siz;
@@ -307,14 +318,14 @@ static _NIL_TYPE_ LTAB(_NIL_TYPE_)
        _stk_zap_CNT_();
        _print_("[: ... :]"); }}
 
-/*------------------------------------------------------------------------*/
-/*  LTAb                                                                  */
-/*     expr-stack: [... ... ... TAB NBR VOI] -> [... ... ... TAB NBR EXP] */
-/*     cont-stack: [... ... ... ... ... TAb] -> [... ... ... ... TAb EXP] */
-/*                                                                        */
-/*     expr-stack: [... ... ... ... TAB NBR] -> [... ... ... ... ... EOL] */
-/*     cont-stack: [... ... ... ... ... TAb] -> [... ... ... ... ... ...] */
-/*------------------------------------------------------------------------*/
+/*--------------------------------------------------------------------------*/
+/*  LTAb                                                                    */
+/*     expr-stack: [... ... ... TAB NBR  VOI] -> [... ... ... TAB NBR EXP]  */
+/*     cont-stack: [... ... ... ... ... LTAb] -> [... ... ... ... LTAb EXP] */
+/*                                                                          */
+/*     expr-stack: [... ... ... ... TAB  NBR] -> [... ... ... ... ... EOL]  */
+/*     cont-stack: [... ... ... ... ... LTAb] -> [... ... ... ... ... ...]  */
+/*--------------------------------------------------------------------------*/
 static _NIL_TYPE_ LTAb(_NIL_TYPE_)
  { _EXP_TYPE_ nbr, exp, voi;
    _UNS_TYPE_ idx, siz;
