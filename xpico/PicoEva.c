@@ -251,14 +251,8 @@ static _NIL_TYPE_ ATV(_NIL_TYPE_)
        
 /*------------------------------------------------------------------------*/
 /*  ATL                                                                   */
-/*     expr-stack: [EXP DCT ARG TAB NBR APL] -> [EXP DCT ARG TAB NBR APL] */
-/*     cont-stack: [... ... ... ... ... ATA] -> [... ... ... ... ... ATA] */
-/*                                                                        */
-/*     expr-stack: [EXP DCT ARG TAB NBR APL] -> [... ... ... ... DCT EXP] */
-/*     cont-stack: [... ... ... ... ... ATA] -> [... ... ... ... RET EXP] */
-/*                                                                        */
-/*     expr-stack: [EXP DCT ARG TAB NBR APL] -> [... ... ... ... ... EXP] */
-/*     cont-stack: [... ... ... ... ... ATA] -> [... ... ... ... ... EXP] */
+/*     expr-stack: [... ... DCT TAB NBR VAL] -> [... ... ... ... ... VAL] */
+/*     cont-stack: [... ... ... ... ... ATL] -> [... ... ... ... ... ...] */
 /*------------------------------------------------------------------------*/
 static _NIL_TYPE_ ATL(_NIL_TYPE_)
  { _EXP_TYPE_ val, nbr, concreteTab;
@@ -359,17 +353,20 @@ static _NIL_TYPE_ CHG(_NIL_TYPE_)
    _stk_poke_EXP_(val);
    _stk_zap_CNT_(); }
 
-/*------------------------------------------------------------------------*/
-/*  DEF                                                                   */
-/*     expr-stack: [... ... ... ... ... DEF] -> [... ... ... ... DCT EXP] */
-/*     cont-stack: [... ... ... ... ... DEF] -> [... ... ... ... ASS EXP] */
-/*                                                                        */
-/*     expr-stack: [... ... ... ... ... DEF] -> [... ... ... ... ... FUN] */
-/*     cont-stack: [... ... ... ... ... DEF] -> [... ... ... ... ... ...] */
-/*                                                                        */
-/*     expr-stack: [... ... ... ... ... DEF] -> [... ... ... DCT EXP IDX] */
-/*     cont-stack: [... ... ... ... ... DEF] -> [... ... ... ... IDX EXP] */
-/*------------------------------------------------------------------------*/
+/*-------------------------------------------------------------------------*/
+/*  DEF                                                                    */
+/*     expr-stack: [... ... ... ... ... DEF] -> [... ... ... ... DCT EXP]  */
+/*     cont-stack: [... ... ... ... ... DEF] -> [... ... ... ... ASS EXP]  */
+/*                                                                         */
+/*     expr-stack: [... ... ... ... ... DEF] -> [... ... ... ... ... FUN]  */
+/*     cont-stack: [... ... ... ... ... DEF] -> [... ... ... ... ... ...]  */
+/*                                                                         */
+/*     expr-stack: [... ... ... ... ... DEF] -> [... ... ... DCT EXP IDX]  */
+/*     cont-stack: [... ... ... ... ... DEF] -> [... ... ... ... IDX EXP]  */
+/*                                                                         */
+/*     expr-stack: [... ... ... ... ... DEF] -> [... ... ... DCT EXP  EXP] */
+/*     cont-stack: [... ... ... ... ... DEF] -> [... ... ... ... LARG EXP] */
+/*-------------------------------------------------------------------------*/
 static _NIL_TYPE_ DEF(_NIL_TYPE_)
  { _EXP_TYPE_ arg, dct, def, exp, fun, idx, inv, nam;
    _TAG_TYPE_ tag;
@@ -467,14 +464,14 @@ static _NIL_TYPE_ IDX(_NIL_TYPE_)
    else
      _error_(_SIZ_ERROR_); }
 
-/*------------------------------------------------------------------------*/
-/*  LARG                                                                  */
-/*     expr-stack: [... ... ... DCT EXP NBR] -> [... DCT TAB EXP *1* EXP] */
-/*     cont-stack: [... ... ... ... ... IDX] -> [... ... ... ... INI EXP] */
-/*                                                                        */
-/*     expr-stack: [... ... ... DCT EXP NBR] -> [... ... ... ... ... *E*] */
-/*     cont-stack: [... ... ... ... ... IDX] -> [... ... ... ... ... ...] */
-/*------------------------------------------------------------------------*/
+/*--------------------------------------------------------------------------*/
+/*  LARG                                                                    */
+/*     expr-stack: [... ... ... DCT EXP  EXP] -> [DCT LTAB TAB EXP *1* EXP] */
+/*     cont-stack: [... ... ... ... ... LARG] -> [... ... ... ... INIC EXP] */
+/*                                                                          */
+/*     expr-stack: [... ... ... DCT EXP  EXP] -> [... ... ... ... ... LTAB] */
+/*     cont-stack: [... ... ... ... ... LARG] -> [... ... ... ... ... ... ] */
+/*--------------------------------------------------------------------------*/
 static _NIL_TYPE_ LARG(_NIL_TYPE_)
  { _EXP_TYPE_ dct, exp, val, ltab;
    _TAG_TYPE_ tag;
@@ -507,14 +504,14 @@ static _NIL_TYPE_ LARG(_NIL_TYPE_)
    else
      _error_(_IAG_ERROR_); }
 
-/*------------------------------------------------------------------------*/
-/*  INIC                                                                  */
-/*     expr-stack: [... DCT TAB EXP NBR VAL] -> [... DCT TAB EXP NBR EXP] */
-/*     cont-stack: [... ... ... ... ... INI] -> [... ... ... ... INI EXP] */
-/*                                                                        */
-/*     expr-stack: [... DCT TAB EXP NBR VAL] -> [... ... ... ... ... TAB] */
-/*     cont-stack: [... ... ... ... ... INI] -> [... ... ... ... ... ...] */
-/*------------------------------------------------------------------------*/
+/*----------------------------------------------------------------------------*/
+/*  INIC                                                                      */
+/*     expr-stack: [DCT LTAB EXP TAB NBR VAL ] -> [DCT LTAB EXP TAB NBR  EXP] */
+/*     cont-stack: [... ... ... ... ...  INIC] -> [... ... ... ...  INIC EXP] */
+/*                                                                            */
+/*     expr-stack: [DCT LTAB EXP TAB NBR VAL] -> [... ... ... ... ... LTAB]   */
+/*     cont-stack: [... ... ... ... ... INIC] -> [... ... ... ... ... ... ]   */
+/*----------------------------------------------------------------------------*/
 static _NIL_TYPE_ INIC(_NIL_TYPE_)
  { _EXP_TYPE_ dct, exp, nbr, ltab, concreteTab, val;
    _UNS_TYPE_ ctr, siz;
@@ -607,19 +604,22 @@ static _NIL_TYPE_ REF(_NIL_TYPE_)
    else
      _error_(_NAT_ERROR_); }
      
-/*------------------------------------------------------------------------*/
-/*  LREF                                                                  */
-/*     expr-stack: [... ... ... ... TAB NBR] -> [... ... ... ... ... VAL] */
-/*     cont-stack: [... ... ... ... ... REF] -> [... ... ... ... ... ...] */
-/*------------------------------------------------------------------------*/
+/*-------------------------------------------------------------------------*/
+/*  LREF                                                                   */
+/*     expr-stack: [... ... ... ... LTAB NBR] -> [... ... DCT TAB NBR EXP] */
+/*     cont-stack: [... ... ... ... ... LREF] -> [... ... ... ... ATL EXP] */
+/*                                                                         */
+/*     expr-stack: [... ... ... ... LTAB NBR] -> [... ... ... ... ... VAL] */
+/*     cont-stack: [... ... ... ... ... LREF] -> [... ... ... ... ... ...] */
+/*-------------------------------------------------------------------------*/
 static _NIL_TYPE_ LREF(_NIL_TYPE_)
  { _EXP_TYPE_ dct, xdc, exp, nbr, tab, ltab, newtab, i;
    _UNS_TYPE_ ctr, siz, pos;
    _STR_TYPE_ iname;
    _TAG_TYPE_ tag;
    _stk_pop_EXP_(nbr);
-   _stk_pop_EXP_(tab);
    _stk_peek_EXP_(ltab);
+   tab = _ag_get_LTAB_CONCR_(ltab);
    tag = _ag_get_TAG_(tab);
    if (TAB_tab[tag])
      { siz = _ag_get_TAB_SIZ_(tab);
@@ -840,13 +840,13 @@ static _NIL_TYPE_ TBL(_NIL_TYPE_)
    _stk_poke_CNT_(REF);
    _stk_push_CNT_(EXP); }
    
-/*------------------------------------------------------------------------*/
-/*  LTBL                                                                  */
-/*     expr-stack: [... ... ... ... ... TBL] -> [... ... ... ... TAB EXP] */
-/*     cont-stack: [... ... ... ... ... TBL] -> [... ... ... ... REF EXP] */
-/*------------------------------------------------------------------------*/
+/*--------------------------------------------------------------------------*/
+/*  LTBL                                                                    */
+/*     expr-stack: [... ... ... ... ... LTBL] -> [... ... ... ... LTAB EXP] */
+/*     cont-stack: [... ... ... ... ... LTBL] -> [... ... ... ... LREF EXP] */
+/*--------------------------------------------------------------------------*/
 static _NIL_TYPE_ LTBL(_NIL_TYPE_)
- { _EXP_TYPE_ dct, idx, val, nam, ltab, concreteTab, ltbl;
+ { _EXP_TYPE_ dct, idx, val, nam, ltab, ltbl;
    _TAG_TYPE_ tag;
    _stk_claim_();
    _stk_peek_EXP_(ltbl);
@@ -857,9 +857,7 @@ static _NIL_TYPE_ LTBL(_NIL_TYPE_)
       { idx = _ag_get_TAB_EXP_(val, 1);
         _dct_locate_(nam, dct, _DCT_);
         ltab = _ag_get_DCT_VAL_(dct);
-        concreteTab = _ag_get_LTAB_CONCR_(ltab);
         _stk_poke_EXP_(ltab);
-        _stk_push_EXP_(concreteTab);
         _stk_push_EXP_(idx);
         _stk_poke_CNT_(LREF);
         _stk_push_CNT_(EXP); }

@@ -107,9 +107,9 @@ static _NIL_TYPE_ RPR(_NIL_TYPE_);
 static _NIL_TYPE_ SET(_NIL_TYPE_);
 static _NIL_TYPE_ SMC(_NIL_TYPE_);
 static _NIL_TYPE_ TBL(_NIL_TYPE_);
-static _NIL_TYPE_ LTBL(_NIL_TYPE_); // Added Lazy Tabulation
-static _NIL_TYPE_ LTBLC(_NIL_TYPE_); // Added for concrete part of lazy tabulation (when defining)
-static _NIL_TYPE_ LTBlc(_NIL_TYPE_);// Added
+static _NIL_TYPE_ LTBL(_NIL_TYPE_);  // Added Lazy Tabulation
+static _NIL_TYPE_ LTBLCY(_NIL_TYPE_); // Added for concrete part of lazy tabulation (when defining)
+static _NIL_TYPE_ LTBlCy(_NIL_TYPE_); // Added
 static _NIL_TYPE_ TRM(_NIL_TYPE_);
 static _NIL_TYPE_ TRm(_NIL_TYPE_);
 static _NIL_TYPE_ UNR(_NIL_TYPE_);
@@ -450,6 +450,9 @@ static _NIL_TYPE_ NRy(_NIL_TYPE_)
 /*     cont-stack: [... ... ... ... CNT REF] -> [... ... CNT TBL IDX EXP] */
 /*                                                                        */
 /*     expr-stack: [... ... ... ... ... ...] -> [... ... ... ... ... NAM] */
+/*     cont-stack: [... ... ... ... CNT REF] -> [... ... CNT LTBL LTBLCY] */
+/*                                                                        */
+/*     expr-stack: [... ... ... ... ... ...] -> [... ... ... ... ... NAM] */
 /*     cont-stack: [... ... ... ... CNT REF] -> [... ... ... ... CNT VAR] */
 /*                                                                        */
 /*     expr-stack: [... ... ... ... ... ...] -> [... ... ... ... ... NAM] */
@@ -522,7 +525,7 @@ static _NIL_TYPE_ REF(_NIL_TYPE_)
              case _BRC_TOKEN_:
                READ_TOKEN();
                _stk_poke_CNT_(LTBL);
-               _stk_push_CNT_(LTBLC);
+               _stk_push_CNT_(LTBLCY);
                break;
              default:
                _stk_poke_CNT_(VAR); }
@@ -660,11 +663,11 @@ static _NIL_TYPE_ TBL(_NIL_TYPE_)
    _stk_poke_EXP_(tbl);
    _stk_zap_CNT_(); }
 
-/*------------------------------------------------------------------------*/
-/*  TBL                                                                   */
-/*     expr-stack: [... ... ... ... NAM EXP] -> [... ... ... ... ... TBL] */
-/*     cont-stack: [... ... ... ... CNT TBL] -> [... ... ... ... ... CNT] */
-/*------------------------------------------------------------------------*/
+/*--------------------------------------------------------------------------*/
+/*  TBL                                                                     */
+/*     expr-stack: [... ... ... ... NAM ARG ] -> [... ... ... ... ... LTBL] */
+/*     cont-stack: [... ... ... ... CNT LTBL] -> [... ... ... ... ...  CNT] */
+/*--------------------------------------------------------------------------*/
 static _NIL_TYPE_ LTBL(_NIL_TYPE_)
 { _EXP_TYPE_ arg, nam, ltbl;
   _mem_claim_();
@@ -676,15 +679,15 @@ static _NIL_TYPE_ LTBL(_NIL_TYPE_)
   _stk_poke_EXP_(ltbl);
   _stk_zap_CNT_(); }
 
-/*------------------------------------------------------------------------*/
-/*  LTBl                                                                  */
-/*     expr-stack: [... ... ... ... ... NAM] -> [... ... ... ... NAM *E*] */
-/*     cont-stack: [... ... ... ... CNT NRY] -> [... ... ... ... ... CNT] */
-/*                                                                        */
-/*     expr-stack: [... ... ... ... ... NAM] -> [... ... ... ... NAM *1*] */
-/*     cont-stack: [... ... ... ... CNT NRY] -> [... ... ... CNT NR1 EXP] */
-/*------------------------------------------------------------------------*/
-static _NIL_TYPE_ LTBLC(_NIL_TYPE_)
+/*------------------------------------------------------------------------------*/
+/*  LTBCY                                                                       */
+/*     expr-stack: [... ... ... ... ...    NAM] -> [... ... ... ... NAM *V*]    */
+/*     cont-stack: [... ... ... ... CNT LTBLCY] -> [... ... ... ... ... CNT]    */
+/*                                                                              */
+/*     expr-stack: [... ... ... ... ...    NAM] -> [... ... ... ...  NAM   *1*] */
+/*     cont-stack: [... ... ... ... CNT LYBLCY] -> [... ... ... CNT LTBLC1 EXP] */
+/*------------------------------------------------------------------------------*/
+static _NIL_TYPE_ LTBLCY(_NIL_TYPE_)
  { _stk_claim_();
    if (current_token == _CBR_TOKEN_)
      { READ_TOKEN();
@@ -692,15 +695,18 @@ static _NIL_TYPE_ LTBLC(_NIL_TYPE_)
        _stk_zap_CNT_(); }
    else
      { _stk_push_EXP_(_ONE_);
-       _stk_poke_CNT_(LTBlc);
+       _stk_poke_CNT_(LTBlCy);
        _stk_push_CNT_(EXP); }}
 
-/*------------------------------------------------------------------------*/
-/*  LTBlc                                                                 */
-/*     expr-stack: [... ... ... ... NAM EXP] -> [... ... ... ... NAM EXP] */
-/*     cont-stack: [... ... ... ... CNT IDX] -> [... ... ... ... ... CNT] */
-/*------------------------------------------------------------------------*/
-static _NIL_TYPE_ LTBlc(_NIL_TYPE_)
+/*------------------------------------------------------------------------------*/
+/*  LTBLCy                                                                      */
+/*     expr-stack: [NAM EXP ... EXP NBR   EXP ] -> [... ... ... ... NAM TAB]    */
+/*     cont-stack: [... ... ... ... CNT LTBLCy] -> [... ... ... ... ... CNT]    */
+/*                                                                              */
+/*     expr-stack: [NAM EXP ... EXP NBR   EXP ] -> [NAM EXP ... EXP   EXP  NBR] */
+/*     cont-stack: [... ... ... ... CNT LTBLCy] -> [... ... ... CNT LTBLCy EXP] */
+/*------------------------------------------------------------------------------*/
+static _NIL_TYPE_ LTBlCy(_NIL_TYPE_)
 { _EXP_TYPE_ exp, nbr, tab;
    _UNS_TYPE_ ctr;
    _stk_claim_();
