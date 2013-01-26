@@ -260,17 +260,17 @@ static _NIL_TYPE_ ATV(_NIL_TYPE_)
 /*     cont-stack: [... ... ... ... ... ATA] -> [... ... ... ... ... EXP] */
 /*------------------------------------------------------------------------*/
 static _NIL_TYPE_ ATL(_NIL_TYPE_)
- { _EXP_TYPE_ act, apl, val, dct, exp, fun, nam, nbr, concreteTab;
-   _CNT_TYPE_ cnt;
-   _UNS_TYPE_ pos, siz;
+ { _EXP_TYPE_ val, dct, nbr, concreteTab;
+   _UNS_TYPE_ pos;
    _mem_claim_();
    _stk_pop_EXP_(val);
-   _stk_pop_EXP_(dct);
    _stk_pop_EXP_(nbr);
-   _stk_peek_EXP_(concreteTab);
+   _stk_pop_EXP_(concreteTab);
+   _stk_peek_EXP_(dct);
    
    pos = _ag_get_NBU_(nbr);
    _ag_set_TAB_EXP_(concreteTab, pos, val);
+   _DCT_ = dct;
    _stk_poke_EXP_(val);
    _stk_zap_CNT_(); 
    }
@@ -613,8 +613,9 @@ static _NIL_TYPE_ REF(_NIL_TYPE_)
 /*     cont-stack: [... ... ... ... ... REF] -> [... ... ... ... ... ...] */
 /*------------------------------------------------------------------------*/
 static _NIL_TYPE_ LREF(_NIL_TYPE_)
- { _EXP_TYPE_ dct, exp, nbr, tab, ltab, temp, newtab;
+ { _EXP_TYPE_ dct, xdc, exp, nbr, tab, ltab, newtab, i;
    _UNS_TYPE_ ctr, siz;
+   _STR_TYPE_ iname;
    _TAG_TYPE_ tag;
    _stk_pop_EXP_(nbr);
    _stk_pop_EXP_(tab);
@@ -624,8 +625,19 @@ static _NIL_TYPE_ LREF(_NIL_TYPE_)
      { siz = _ag_get_TAB_SIZ_(tab);
        tag = _ag_get_TAG_(nbr);
        if (tag == _NBR_TAG_)
-         { dct = _ag_get_LTAB_DCT_(ltab);
+         { xdc = _ag_get_LTAB_DCT_(ltab);
            ctr = _ag_get_NBU_(nbr);
+  
+           iname = "i";
+           _mem_claim_STR_(iname);
+           i = _env_make_NAM_(iname);
+           dct = _ag_make_DCT_();
+           _ag_set_DCT_NAM_(dct, i);
+           _ag_set_DCT_VAL_(dct, nbr);
+           _ag_set_DCT_DCT_(dct, xdc);
+           _stk_poke_EXP_(_DCT_);
+           _DCT_ = dct;
+           
            if ((ctr > 0) && (ctr <= siz))
              { exp = _ag_get_TAB_EXP_(tab, ctr);
                tag = _ag_get_TAG_(exp);
@@ -633,14 +645,14 @@ static _NIL_TYPE_ LREF(_NIL_TYPE_)
                  { nbr = _ag_make_NBU_(ctr);
                        // evaluate the expression
                    exp = _ag_get_LTAB_LZEXP_(ltab);
-                   //dct = _ag_get_LTAB_DCT_(ltab);
-                   _stk_poke_EXP_(tab);
+                   _stk_push_EXP_(tab);
                    _stk_push_EXP_(nbr);
-                   _stk_push_EXP_(dct);
                    _stk_push_EXP_(exp);
                    _stk_poke_CNT_(ATL);
                    _stk_push_CNT_(EXP); }
                else {
+               _stk_peek_EXP_(dct);
+               _DCT_ = dct;
                _stk_poke_EXP_(exp);
                _stk_zap_CNT_(); }}
            else {
@@ -662,29 +674,13 @@ static _NIL_TYPE_ LREF(_NIL_TYPE_)
              nbr = _ag_make_NBU_(siz);
                 // evaluate the expression
              exp = _ag_get_LTAB_LZEXP_(ltab);
-             //dct = _ag_get_LTAB_DCT_(ltab);
-             _stk_poke_EXP_(newtab);
+             _stk_push_EXP_(newtab);
              _stk_push_EXP_(nbr);
-             _stk_push_EXP_(dct);
              _stk_push_EXP_(exp);
              _stk_poke_CNT_(ATL);
              _stk_push_CNT_(EXP);
-             
-             /*_stk_poke_EXP_(newtab);
-             _stk_push_EXP_(_ONE_);
-             _stk_push_EXP_(dct);
-             _stk_push_EXP_(exp);
-             _stk_push_EXP_(_ag_make_NBR_(siz));
-             _stk_poke_CNT_(ATL);*/
-             
-/*                // save it in the new concrete table, on last position
-             _ag_set_TAB_EXP_(newtab, siz, exp);
-             //_stk_poke_EXP_(exp);
-             //_stk_zap_CNT_();*/
-
             }
           }
-             //_error_(_RNG_ERROR_); }
        else
         _error_(_IIX_ERROR_); }
    else
