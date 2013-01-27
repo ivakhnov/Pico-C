@@ -40,6 +40,7 @@ static _NIL_TYPE_ REF(_NIL_TYPE_);
 static _NIL_TYPE_ LREF(_NIL_TYPE_); // Added for reference in a lazy table (access tabulation)
 static _NIL_TYPE_ RET(_NIL_TYPE_);
 static _NIL_TYPE_ RPL(_NIL_TYPE_);
+static _NIL_TYPE_ LRPL(_NIL_TYPE_); // Added to replace members of the concrete part of a lazy table (assign)
 static _NIL_TYPE_ SET(_NIL_TYPE_);
 static _NIL_TYPE_ SLF(_NIL_TYPE_);
 static _NIL_TYPE_ SWP(_NIL_TYPE_);
@@ -477,7 +478,7 @@ static _NIL_TYPE_ LARG(_NIL_TYPE_)
    _TAG_TYPE_ tag;
    _stk_claim_();
    _stk_pop_EXP_(val);
-  tag = _ag_get_TAG_(val);
+   tag = _ag_get_TAG_(val);
    if (tag == _VOI_TAG_)
      { _stk_pop_EXP_(exp);
        ltab = _ag_make_LTAB_();
@@ -717,6 +718,79 @@ static _NIL_TYPE_ RPL(_NIL_TYPE_)
          _error_(_IIX_ERROR_); }
    else
      _error_(_NAT_ERROR_); }
+     
+/*-------------------------------------------------------------------------*/
+/*  LRPL                                                                   */
+/*     expr-stack: [... ... ... LTAB EXP EXP] -> [... ... ... ... .. LTAB] */
+/*     cont-stack: [... ... ... ... ... LRPL] -> [... ... ... ... ... ...] */
+/*                                                                         */
+/*     expr-stack: [... ... ... LTAB EXP EXP] -> [... ... DCT TAB NBR EXP] */
+/*     cont-stack: [... ... ... ... ... LRPL] -> [... ... ... ... ATL EXP] */
+/*-------------------------------------------------------------------------*/
+static _NIL_TYPE_ LRPL(_NIL_TYPE_)
+ { _EXP_TYPE_ dct, arg, xdc, exp, nbr, tab, ltab, newtab, i;
+   _UNS_TYPE_ ctr, siz, pos;
+   _STR_TYPE_ iname;
+   _TAG_TYPE_ tag;
+   _stk_pop_EXP_(arg);
+   _stk_pop_EXP_(exp);
+   _stk_peek_EXP_(ltab);
+   tag = _ag_get_TAG_(arg);
+   if (tag == _VOI_TAG_)                                    // Assign the new lazy expression
+     { _ag_set_LTAB_LZEXP_(ltab, exp);
+       _ag_set_LTAB_DCT_(ltab, _DCT_);
+       _stk_zap_CNT_(); }
+   else if (TAB_tab[tag] && (_ag_get_TAB_SIZ_(arg) == 1))   // Assign new member of concrete part
+     { tab = _ag_get_LTAB_CONCR_(ltab);
+       siz = _ag_get_TAB_SIZ_(tab);
+       nbr = _ag_get_TAB_EXP_(arg, 1);
+       tag = _ag_get_TAG_(nbr);
+       if (tag == _NBR_TAG_)
+         { xdc = _ag_get_LTAB_DCT_(ltab);
+           pos = _ag_get_NBU_(nbr);
+  
+           iname = "i";
+           _mem_claim_STR_(iname);
+           i = _env_make_NAM_(iname);
+           dct = _ag_make_DCT_();
+           _ag_set_DCT_NAM_(dct, i);
+           _ag_set_DCT_VAL_(dct, nbr);
+           _ag_set_DCT_DCT_(dct, xdc);
+           _stk_poke_EXP_(_DCT_);
+           _DCT_ = dct;
+           _stk_push_EXP_(exp);
+           _stk_push_EXP_(tab);
+           if (pos > 0)
+             { if (pos > siz) 
+                 { ctr = _ag_get_NBU_(nbr);                 // make the counter equal to pos
+                   _mem_claim_SIZ_(ctr);                    // create a new concrete table
+                   newtab = _ag_make_TAB_(ctr);
+                   _ag_set_LTAB_CONCR_(ltab, newtab);
+                   exp = _ag_make_LAZY_();                  // fill the new concrete table
+                   while (ctr > siz) {                      // first fill with <lazy> members
+                      _ag_set_TAB_EXP_(newtab, ctr, exp);
+                      ctr--; }
+                   while (ctr > 0) {                        // now copy the concrete part
+                      exp = _ag_get_TAB_EXP_(tab, ctr);
+                      _ag_set_TAB_EXP_(newtab, ctr, exp);
+                      ctr--; }
+                   _stk_poke_EXP_(newtab);
+                 }
+               _stk_pop_EXP_(tab);
+               _stk_peek_EXP_(exp);
+               _stk_poke_EXP_(tab);
+               _stk_push_EXP_(nbr);
+               _stk_push_EXP_(exp);
+               _stk_poke_CNT_(ATL);
+               _stk_push_CNT_(EXP);
+             }
+           else
+            _error_(_RNG_ERROR_); }
+       else
+        _error_(_IIX_ERROR_); }
+   else
+     _error_(_IAG_ERROR_); }
+
 
 /*------------------------------------------------------------------------*/
 /*  SET                                                                   */
@@ -728,9 +802,12 @@ static _NIL_TYPE_ RPL(_NIL_TYPE_)
 /*                                                                        */
 /*     expr-stack: [... ... ... ... ... SET] -> [... ... ... TAB IDX EXP] */
 /*     cont-stack: [... ... ... ... ... SET] -> [... ... ... RPL SWP EXP] */
+/*                                                                        */
+/*     expr-stack: [... ... ... ... ... SET] -> [... ... .. LTAB EXP EXP] */
+/*     cont-stack: [... ... ... ... ... SET] -> [... ... ... .. LRPL EXP] */
 /*------------------------------------------------------------------------*/
 static _NIL_TYPE_ SET(_NIL_TYPE_)
- { _EXP_TYPE_ arg, dct, exp, fun, idx, inv, nam, set, tab;
+ { _EXP_TYPE_ arg, dct, exp, fun, idx, inv, nam, set, tab, ltab;
    _TAG_TYPE_ tag;
    _stk_claim_();
    _mem_claim_();
@@ -773,6 +850,17 @@ static _NIL_TYPE_ SET(_NIL_TYPE_)
         _stk_push_CNT_(SWP);
         _stk_push_CNT_(EXP);
         break;
+      case _LTBL_TAG_:
+        nam = _ag_get_TBL_NAM_(inv);
+        arg = _ag_get_TBL_IDX_(inv);
+        _dct_locate_(nam, dct, _DCT_);
+        ltab = _ag_get_DCT_VAL_(dct);
+        _stk_poke_EXP_(ltab);
+        _stk_push_EXP_(exp);
+        _stk_push_EXP_(arg);
+        _stk_poke_CNT_(LRPL);
+        _stk_push_CNT_(EXP);
+      break;
       default:
        _error_(_AGR_ERROR_); }}
 
