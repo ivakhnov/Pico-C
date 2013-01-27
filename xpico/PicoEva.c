@@ -640,7 +640,7 @@ static _NIL_TYPE_ LREF(_NIL_TYPE_)
            _DCT_ = dct;
            _stk_push_EXP_(tab);
            
-           if (pos > 0)
+           if ((pos > 0) && (pos <= 1073741824))            // greatest positive number represented with 31 bits, greater are negative
              { if (pos > siz) 
                  { ctr = _ag_get_NBU_(nbr);                 // make the counter equal to pos
                    _mem_claim_SIZ_(ctr);                    // create a new concrete table
@@ -760,7 +760,7 @@ static _NIL_TYPE_ LRPL(_NIL_TYPE_)
            _DCT_ = dct;
            _stk_push_EXP_(exp);
            _stk_push_EXP_(tab);
-           if (pos > 0)
+           if ((pos > 0) && (pos <= 1073741824))            // greatest positive number represented with 31 bits, greater are negative
              { if (pos > siz) 
                  { ctr = _ag_get_NBU_(nbr);                 // make the counter equal to pos
                    _mem_claim_SIZ_(ctr);                    // create a new concrete table
